@@ -1,0 +1,1533 @@
+{
+	"info": {
+		"_postman_id": "3f7ff4e1-77f2-4220-9cad-e7cb3eec059d",
+		"name": "User Service Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24536323"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"item": [
+				{
+					"name": "Add user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains all fields\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\", \"Yury\");\r",
+									"    pm.expect(jsonData).to.have.property(\"email\", \"yury@yandex.ru\");\r",
+									"    pm.expect(jsonData).to.have.property(\"password\", \"yurypass\");\r",
+									"    pm.expect(jsonData).to.have.property(\"aboutMe\", \"Good person.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Yury\",\r\n  \"email\": \"yury@yandex.ru\",\r\n  \"password\": \"yurypass\",\r\n  \"aboutMe\": \"Good person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user with already used email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var boris1User = {\r",
+									"  name: \"Boris1\",\r",
+									"  email: \"boris@yandex.ru\",\r",
+									"  password: \"boris1pass\",\r",
+									"  aboutMe: \"About Boris1.\"\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(boris1User)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding first user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"First user added:\", res.json());\r",
+									"        }\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Boris2\",\r\n  \"email\": \"boris@yandex.ru\",\r\n  \"password\": \"boris2pass\",\r\n  \"aboutMe\": \"About Boris2.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user with too short name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"I\",\r\n  \"email\": \"igor@yandex.ru\",\r\n  \"password\": \"igorpass\",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user with blank name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"    \",\r\n  \"email\": \"igor@yandex.ru\",\r\n  \"password\": \"igorpass\",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user without name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"igor@yandex.ru\",\r\n  \"password\": \"igorpass\",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user with incorrect email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Igor\",\r\n  \"email\": \"igor.yandex.ru\",\r\n  \"password\": \"igorpass\",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user without email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Igor\",\r\n  \"password\": \"igorpass\",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user with too short password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Igor\",\r\n  \"email\": \"igor@yandex.ru\",\r\n  \"password\": \"pw\",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user with blank password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Igor\",\r\n  \"email\": \"igor@yandex.ru\",\r\n  \"password\": \"        \",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user without password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Igor\",\r\n  \"email\": \"igor@yandex.ru\",\r\n  \"aboutMe\": \"Igor person.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update User Data",
+			"item": [
+				{
+					"name": "Update user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var peterUser = {\r",
+									"  name: \"Peter\",\r",
+									"  email: \"peter@yandex.ru\",\r",
+									"  password: \"peterpass\",\r",
+									"  aboutMe: \"About Peter.\"\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(peterUser)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"User added:\", res.json());\r",
+									"            pm.environment.set(\"peterUserId\", res.json().id);\r",
+									"        }\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response fields are all correct\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\", \"Petr\");\r",
+									"    pm.expect(jsonData).to.have.property(\"email\", \"peter@yandex.ru\");\r",
+									"    pm.expect(jsonData).to.have.property(\"password\", \"petrpass\");\r",
+									"    pm.expect(jsonData).to.have.property(\"aboutMe\", \"About Petr.\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.unset(\"peterUserId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{peterUserId}}"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "peterpass"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Petr\",\r\n  \"password\": \"petrpass\",\r\n  \"aboutMe\": \"About Petr.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update not exists user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "0"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "somepass"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Platon\",\r\n  \"password\": \"platonpass\",\r\n  \"aboutMe\": \"About Platon.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user with incorrect password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var platonUser = {\r",
+									"  name: \"Platon\",\r",
+									"  email: \"platon@yandex.ru\",\r",
+									"  password: \"platonpass\",\r",
+									"  aboutMe: \"About Platon.\"\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(platonUser)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"User added:\", res.json());\r",
+									"            pm.environment.set(\"platonUserId\", res.json().id);\r",
+									"        }\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.environment.unset(\"platonUserId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{platonUserId}}"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "somepass"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"aboutMe\": \"All about Platon.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user with too short name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "0"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "somepass"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"P\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user with blank name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "0"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "somepass"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"    \"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user with too short password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "0"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "somepass"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"pw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user with blank password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "0"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "somepass"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"        \"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete User",
+			"item": [
+				{
+					"name": "Delete user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var michaelUser = {\r",
+									"  name: \"Michael\",\r",
+									"  email: \"michael@yandex.ru\",\r",
+									"  password: \"michaelpass\",\r",
+									"  aboutMe: \"About Michael.\"\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(michaelUser)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"User added:\", res.json());\r",
+									"            pm.environment.set(\"michaelUserId\", res.json().id);\r",
+									"        }\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var michaelUserId = pm.environment.get(\"michaelUserId\");\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users/') + michaelUserId,\r",
+									"        method: 'GET',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while getting user:\", err);\r",
+									"        } else {\r",
+									"            pm.test(\"User deleted\", function() {\r",
+									"                pm.expect(res.code).to.eql(400);\r",
+									"            });\r",
+									"        }\r",
+									"    });\r",
+									"\r",
+									"pm.environment.unset(\"michaelUserId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{michaelUserId}}",
+								"type": "text"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "michaelpass",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete not exists user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "0"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "somepass"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user with incorrect password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var danielUser = {\r",
+									"  name: \"Daniel\",\r",
+									"  email: \"daniel@yandex.ru\",\r",
+									"  password: \"danielpass\",\r",
+									"  aboutMe: \"About Daniel.\"\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(danielUser)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"User added:\", res.json());\r",
+									"            pm.environment.set(\"danielUserId\", res.json().id);\r",
+									"        }\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.environment.unset(\"danielUserId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{danielUserId}}"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "wrongpass"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get User",
+			"item": [
+				{
+					"name": "Get user by self",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var germanUser = {\r",
+									"  name: \"German\",\r",
+									"  email: \"german@yandex.ru\",\r",
+									"  password: \"germanpass\",\r",
+									"  aboutMe: \"About German.\"\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(germanUser)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"User added:\", res.json());\r",
+									"            pm.environment.set(\"germanUserId\", res.json().id);\r",
+									"        }\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains all fields\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\", \"German\");\r",
+									"    pm.expect(jsonData).to.have.property(\"email\", \"german@yandex.ru\");\r",
+									"    pm.expect(jsonData).to.have.property(\"password\", \"germanpass\");\r",
+									"    pm.expect(jsonData).to.have.property(\"aboutMe\", \"About German.\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.unset(\"germanUserId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{germanUserId}}"
+							},
+							{
+								"key": "X-User-Password",
+								"value": "germanpass"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{germanUserId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{germanUserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user anonymously",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var georgeUser = {\r",
+									"  name: \"George\",\r",
+									"  email: \"george@yandex.ru\",\r",
+									"  password: \"georgepass\",\r",
+									"  aboutMe: \"About George.\"\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(georgeUser)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"User added:\", res.json());\r",
+									"            pm.environment.set(\"georgeUserId\", res.json().id);\r",
+									"        }\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains all fields\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\", \"George\");\r",
+									"    pm.expect(jsonData).to.have.property(\"email\", \"george@yandex.ru\");\r",
+									"    pm.expect(jsonData).to.not.have.property(\"password\");\r",
+									"    pm.expect(jsonData).to.have.property(\"aboutMe\", \"About George.\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.unset(\"georgeUserId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{georgeUserId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{georgeUserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get not exists user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get Users",
+			"item": [
+				{
+					"name": "Get users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const gerasims = [\r",
+									"    {\r",
+									"    name: \"Gerasim1\",\r",
+									"    email: \"gerasim1@yandex.ru\",\r",
+									"    password: \"gerasim1pass\",\r",
+									"    aboutMe: \"About Gerasim1.\"\r",
+									"    },\r",
+									"    {\r",
+									"    name: \"Gerasim2\",\r",
+									"    email: \"gerasim2@yandex.ru\",\r",
+									"    password: \"gerasim2pass\",\r",
+									"    aboutMe: \"About Gerasim2.\"\r",
+									"    },\r",
+									"    {\r",
+									"    name: \"Gerasim3\",\r",
+									"    email: \"gerasim3@yandex.ru\",\r",
+									"    password: \"gerasim3pass\",\r",
+									"    aboutMe: \"About Gerasim3.\"\r",
+									"    },\r",
+									"    {\r",
+									"    name: \"Gerasim4\",\r",
+									"    email: \"gerasim4@yandex.ru\",\r",
+									"    password: \"gerasim4pass\",\r",
+									"    aboutMe: \"About Gerasim4.\"\r",
+									"    }\r",
+									"];\r",
+									"\r",
+									"gerasims.forEach(gerasim => {\r",
+									"    pm.sendRequest({\r",
+									"        url: pm.variables.replaceIn('{{baseUrl}}/users'),\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(gerasim)\r",
+									"        }\r",
+									"    },\r",
+									"    function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error while adding user:\", err);\r",
+									"        } else {\r",
+									"            console.log(\"User added:\", res.json());\r",
+									"        }\r",
+									"    }\r",
+									")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Http status 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains 2 elements\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    pm.expect(jsonData).to.have.lengthOf(2);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Passwords are omitted\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    jsonData.forEach((item, index) => {\r",
+									"        pm.expect(item).to.not.have.property(\"password\");\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users?page=1&size=2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

@@ -36,7 +36,7 @@ public class UserController {
                                   @RequestHeader("X-User-Id") Long requesterId,
                                   @RequestHeader("X-User-Password") String password) {
         log.info("Request: update user with id={}, updateUserDto={}", requesterId, updateUserDto);
-        return userService.updateUser(updateUserDto, requesterId, password);
+        return userService.updateUserData(updateUserDto, requesterId, password);
     }
 
     @DeleteMapping

@@ -11,7 +11,7 @@ public interface UserService {
 
     UserDto createUser(NewUserDto newUserDto);
 
-    UserDto updateUser(UpdateUserDto updateUserDto, Long requesterId, String password);
+    UserDto updateUserData(UpdateUserDto updateUserDto, Long requesterId, String password);
 
     void deleteUser(Long requesterId, String password);
 

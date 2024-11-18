@@ -3,7 +3,6 @@ package ru.practicum.workshop.userservice.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,15 +43,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto updateUser(UpdateUserDto updateUserDto, Long userId, String password) {
-        Optional<User> userToUpdateOptional = userRepository.findById(userId);
+    public UserDto updateUserData(UpdateUserDto updateUserDto, Long requesterId, String password) {
+        Optional<User> userToUpdateOptional = userRepository.findById(requesterId);
         if (userToUpdateOptional.isEmpty()) {
-            throw new EntityNotFoundException("User with id=" + userId + " not found.");
+            throw new EntityNotFoundException("User with id=" + requesterId + " not found.");
         }
         User userToUpdate = userToUpdateOptional.get();
 
         if (!userToUpdate.getPassword().equals(password)) {
-            throw new AuthenticationException("Password for user with id=" + userId + " is invalid.");
+            throw new AuthenticationException("Password for user with id=" + requesterId + " is invalid.");
         }
 
         User updatedUser = userRepository.save(userMapper.updateUser(userToUpdate, updateUserDto));
@@ -64,20 +63,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(Long userId, String password) {
-        Optional<User> userToDeleteOptional = userRepository.findById(userId);
+    public void deleteUser(Long requesterId, String password) {
+        Optional<User> userToDeleteOptional = userRepository.findById(requesterId);
         if (userToDeleteOptional.isEmpty()) {
-            throw new EntityNotFoundException("User with id=" + userId + " not found.");
+            throw new EntityNotFoundException("User with id=" + requesterId + " not found.");
         }
         User userToDelete = userToDeleteOptional.get();
 
         if (!userToDelete.getPassword().equals(password)) {
-            throw new AuthenticationException("Password for user with id=" + userId + " is invalid.");
+            throw new AuthenticationException("Password for user with id=" + requesterId + " is invalid.");
         }
 
         log.info("User deleted: id={}", userToDelete.getId());
 
-        userRepository.deleteById(userId);
+        userRepository.deleteById(requesterId);
     }
 
     @Override

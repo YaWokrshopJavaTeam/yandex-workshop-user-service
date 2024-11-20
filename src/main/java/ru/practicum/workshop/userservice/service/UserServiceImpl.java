@@ -3,6 +3,7 @@ package ru.practicum.workshop.userservice.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +31,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(NewUserDto newUserDto) {
-        if (userRepository.existsByEmail(newUserDto.getEmail())) {
-            throw new EntityValidationException("User with email " + newUserDto.getEmail() + " already exists.");
-        }
-
         User newUser = userRepository.save(userMapper.toUser(newUserDto));
 
         log.info("User added: {}", newUser);

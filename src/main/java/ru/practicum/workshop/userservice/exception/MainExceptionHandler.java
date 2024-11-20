@@ -3,6 +3,7 @@ package ru.practicum.workshop.userservice.exception;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,9 +28,27 @@ public class MainExceptionHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConstraintViolationException(ConstraintViolationException exception) {
         ApiError apiError = new ApiError(exception.getClass().getSimpleName(), exception.getMessage());
+
+        log.info("Exception handled: {}", apiError);
+
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
+        ApiError apiError;
+
+        if (exception.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+            var causeException = (org.hibernate.exception.ConstraintViolationException) exception.getCause();
+            apiError = new ApiError(causeException.getClass().getSimpleName(),
+                            "Violating " + causeException.getConstraintName());
+        } else {
+            apiError = new ApiError(exception.getClass().getSimpleName(), exception.getMessage());
+        }
 
         log.info("Exception handled: {}", apiError);
 
@@ -69,7 +88,7 @@ public class MainExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleException(Exception exception) {
-        ApiError apiError = new ApiError("Default exception", exception.getMessage());
+        ApiError apiError = new ApiError(exception.getClass().getSimpleName(), exception.getMessage());
 
         log.info("Exception handled: {}", apiError);
 

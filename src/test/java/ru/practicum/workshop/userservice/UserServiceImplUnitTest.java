@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,7 +67,6 @@ public class UserServiceImplUnitTest {
                 .password("yurypass")
                 .aboutMe("Good person.").build();
 
-        when(userRepository.existsByEmail(inputNewUserDto.getEmail())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(repositoryOutputUser);
 
         UserDto actualUserDto = userService.createUser(inputNewUserDto);
@@ -82,9 +82,10 @@ public class UserServiceImplUnitTest {
                 .password("yurypass")
                 .aboutMe("Good person.").build();
 
-        when(userRepository.existsByEmail(inputNewUserDto.getEmail())).thenReturn(true);
+        when(userRepository.save(any(User.class)))
+                .thenThrow(new DataIntegrityViolationException("Constraint violation: unique email."));
 
-        assertThrows(EntityValidationException.class, () -> userService.createUser(inputNewUserDto));
+        assertThrows(DataIntegrityViolationException.class, () -> userService.createUser(inputNewUserDto));
     }
 
     // Method "updateUserData" tests.

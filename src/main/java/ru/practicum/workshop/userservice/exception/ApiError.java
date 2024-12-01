@@ -11,4 +11,5 @@ public class ApiError {
 
     public String type;
     public String message;
+
 }

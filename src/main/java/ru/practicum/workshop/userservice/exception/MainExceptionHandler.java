@@ -85,6 +85,7 @@ public class MainExceptionHandler {
 
         return apiError;
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleException(Exception exception) {

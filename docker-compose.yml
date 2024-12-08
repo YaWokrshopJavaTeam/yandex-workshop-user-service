@@ -1,11 +1,10 @@
-version: '3.8'
 services:
   user-service:
     build: .
     image: ya-workshop-user-service
     container_name: user-service
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - user-service-database
     environment:

@@ -56,7 +56,7 @@ public class MainExceptionHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleEntityNotFoundException(EntityNotFoundException exception) {
         ApiError apiError = new ApiError(exception.getClass().getSimpleName(), exception.getMessage());
 

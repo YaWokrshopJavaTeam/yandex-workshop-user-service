@@ -39,12 +39,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUserData(UpdateUserDto updateUserDto, Long requesterId, String password) {
-        Optional<User> userToUpdateOptional = userRepository.findById(requesterId);
-        if (userToUpdateOptional.isEmpty()) {
-            throw new EntityNotFoundException("User with id=" + requesterId + " not found.");
-        }
-        User userToUpdate = userToUpdateOptional.get();
-
+        User userToUpdate = userRepository.findById(requesterId).orElseThrow(
+                () -> new AuthenticationException("You don't have access to update information about user with id="
+                        + requesterId));
         if (!userToUpdate.getPassword().equals(password)) {
             throw new AuthenticationException("Password for user with id=" + requesterId + " is invalid.");
         }
@@ -59,12 +56,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(Long requesterId, String password) {
-        Optional<User> userToDeleteOptional = userRepository.findById(requesterId);
-        if (userToDeleteOptional.isEmpty()) {
-            throw new EntityNotFoundException("User with id=" + requesterId + " not found.");
-        }
-        User userToDelete = userToDeleteOptional.get();
-
+        User userToDelete = userRepository.findById(requesterId).orElseThrow(
+                () -> new AuthenticationException("You don't have access to delete user with id="
+                        + requesterId));
         if (!userToDelete.getPassword().equals(password)) {
             throw new AuthenticationException("Password for user with id=" + requesterId + " is invalid.");
         }

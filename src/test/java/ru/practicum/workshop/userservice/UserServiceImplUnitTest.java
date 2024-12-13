@@ -138,7 +138,7 @@ public class UserServiceImplUnitTest {
 
         when(userRepository.findById(requesterId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> userService.updateUserData(inputUpdateUserDto, requesterId, password));
+        assertThrows(AuthenticationException.class, () -> userService.updateUserData(inputUpdateUserDto, requesterId, password));
     }
 
     @Test
@@ -189,7 +189,7 @@ public class UserServiceImplUnitTest {
 
         when(userRepository.findById(requesterId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> userService.deleteUser(requesterId, password));
+        assertThrows(AuthenticationException.class, () -> userService.deleteUser(requesterId, password));
     }
 
     @Test

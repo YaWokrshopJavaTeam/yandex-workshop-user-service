@@ -65,8 +65,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Http status 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"pm.test(\"Http status 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -571,8 +571,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Http status 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"pm.test(\"Http status 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1001,7 +1001,7 @@
 									"            console.log(\"Error while getting user:\", err);\r",
 									"        } else {\r",
 									"            pm.test(\"User deleted\", function() {\r",
-									"                pm.expect(res.code).to.eql(400);\r",
+									"                pm.expect(res.code).to.eql(404);\r",
 									"            });\r",
 									"        }\r",
 									"    });\r",
@@ -1056,8 +1056,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Http status 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"pm.test(\"Http status 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1356,8 +1356,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Http status 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"pm.test(\"Http status 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
 									"});"
 								],
 								"type": "text/javascript",

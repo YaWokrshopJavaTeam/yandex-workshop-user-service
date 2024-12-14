@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
+import ru.practicum.workshop.userservice.enums.RegistrationType;
 import ru.practicum.workshop.userservice.exception.AuthenticationException;
 import ru.practicum.workshop.userservice.mapping.UserMapper;
 import ru.practicum.workshop.userservice.model.User;
@@ -29,9 +30,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(NewUserDto newUserDto) {
-        User newUser = userRepository.save(userMapper.toUser(newUserDto));
+        User newUser = userRepository.save(userMapper.toUser(newUserDto, RegistrationType.MANUAL));
 
         log.info("User added: {}", newUser);
+
+        return userMapper.toUserDtoPrivate(newUser);
+    }
+
+    @Override
+    @Transactional
+    public UserDto autoCreateUser(NewUserDto newUserDto) {
+        User newUser = userRepository.save(userMapper.toUser(newUserDto, RegistrationType.AUTO));
+
+        log.info("Auto user added: {}", newUser);
 
         return userMapper.toUserDtoPrivate(newUser);
     }

@@ -30,6 +30,13 @@ public class UserController {
         return userService.createUser(newUserDto);
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto autoCreateUser(@RequestBody NewUserDto newUserDto) {
+        log.info("Request: auto create user, newUserDto={}", newUserDto);
+        return userService.autoCreateUser(newUserDto);
+    }
+
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public UserDto updateUserData(@RequestBody @Valid UpdateUserDto updateUserDto,

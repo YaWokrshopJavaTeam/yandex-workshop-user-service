@@ -7,7 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.workshop.userservice.dto.AuthRegistrationDto;
+import ru.practicum.workshop.userservice.dto.AutoUpdateUserDto;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
+import ru.practicum.workshop.userservice.dto.ResponseWithUserId;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
 import ru.practicum.workshop.userservice.service.UserService;
@@ -30,9 +33,9 @@ public class UserController {
         return userService.createUser(newUserDto);
     }
 
-    @PostMapping
+    @PostMapping("/internal")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto autoCreateUser(@RequestBody NewUserDto newUserDto) {
+    public ResponseWithUserId autoCreateUser(@RequestBody NewUserDto newUserDto) {
         log.info("Request: auto create user, newUserDto={}", newUserDto);
         return userService.autoCreateUser(newUserDto);
     }
@@ -46,12 +49,35 @@ public class UserController {
         return userService.updateUserData(updateUserDto, requesterId, password);
     }
 
+    @PatchMapping("/internal")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto autoUpdateUserData(@RequestBody AutoUpdateUserDto autoUpdateUserDto,
+                                      @RequestHeader("X-User-Id") Long userId) {
+        log.info("Request: auto update user with id={}, autoUpdateUserDto={}", userId, autoUpdateUserDto);
+        return userService.autoUpdateUserData(autoUpdateUserDto, userId);
+    }
+
+    @PutMapping("/internal/to-manual")
+    @ResponseStatus(HttpStatus.OK)
+    public void transferUserToManual(@RequestHeader("X-User-Id") Long userId,
+                                        @RequestBody @Valid AuthRegistrationDto authRegistrationDto) {
+        log.info("Request: transfer auto user with id={} to manual", userId);
+        userService.transferUserToManual(userId, authRegistrationDto);
+    }
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deleteUser(@RequestHeader("X-User-Id") Long requesterId,
                            @RequestHeader("X-User-Password") String password) {
         log.info("Request: delete user with id={}", requesterId);
         userService.deleteUser(requesterId, password);
+    }
+
+    @DeleteMapping("/internal")
+    @ResponseStatus(HttpStatus.OK)
+    public void autoDeleteUser(@RequestHeader("X-User-Id") Long userId) {
+        log.info("Request: auto delete user with id={}", userId);
+        userService.autoDeleteUser(userId);
     }
 
     @GetMapping("/{userId}")

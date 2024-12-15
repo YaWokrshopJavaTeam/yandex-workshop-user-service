@@ -2,6 +2,8 @@ package ru.practicum.workshop.userservice.dto;
 
 public final class UserDtoValidationConstants {
 
+    public static final String ID_NOT_NULL_ERROR_MESSAGE = "Registration id must be non-null.";
+    public static final String PASSWORD_NOT_NULL_ERROR_MESSAGE = "Registration password must be non-null.";
     public static final String NAME_NOT_BLANK_ERROR_MESSAGE = "User name must be not null and not blank.";
     public static final String NAME_PATTERN_ERROR_MESSAGE = "User name must be not blank.";
     public static final int NAME_MIN_SIZE = 3;

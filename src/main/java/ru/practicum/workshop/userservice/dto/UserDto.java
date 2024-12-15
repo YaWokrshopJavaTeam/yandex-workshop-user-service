@@ -2,6 +2,7 @@ package ru.practicum.workshop.userservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import ru.practicum.workshop.userservice.enums.RegistrationType;
 
 @Data
 @Builder
@@ -20,5 +21,7 @@ public class UserDto {
     private String password;
 
     private String aboutMe;
+
+    private RegistrationType registrationType;
 
 }

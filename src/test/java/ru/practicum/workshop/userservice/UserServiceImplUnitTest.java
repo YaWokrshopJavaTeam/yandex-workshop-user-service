@@ -15,8 +15,8 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
+import ru.practicum.workshop.userservice.enums.RegistrationType;
 import ru.practicum.workshop.userservice.exception.AuthenticationException;
-import ru.practicum.workshop.userservice.exception.EntityValidationException;
 import ru.practicum.workshop.userservice.mapping.UserMapper;
 import ru.practicum.workshop.userservice.model.User;
 import ru.practicum.workshop.userservice.repository.UserRepository;
@@ -182,6 +182,26 @@ public class UserServiceImplUnitTest {
         verify(userRepository).deleteById(requesterId);
     }
 
+    // Method "deleteUser" tests.
+    @Test
+    public void autoDeleteUser_whenInputValid_thenDelete() {
+        Long requesterId = 1L;
+
+        User repositoryOutputUser = User.builder()
+                .id(1L)
+                .name("Yury")
+                .email("yury@yandex.ru")
+                .password("yurypass")
+                .aboutMe("Good person.")
+                .registrationType(RegistrationType.AUTO).build();
+
+        when(userRepository.getReferenceById(requesterId)).thenReturn(repositoryOutputUser);
+
+        userService.autoDeleteUser(requesterId);
+
+        verify(userRepository).deleteById(requesterId);
+    }
+
     @Test
     public void deleteUser_whenNoUserFound_thenThrowException() {
         Long requesterId = 1L;
@@ -310,5 +330,4 @@ public class UserServiceImplUnitTest {
 
         assertThat(actualUserDtoList, equalTo(expectedUserDtoList));
     }
-
 }

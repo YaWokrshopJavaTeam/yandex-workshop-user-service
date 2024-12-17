@@ -1,5 +1,6 @@
 package ru.practicum.workshop.userservice.exception;
 
+import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,14 @@ public class MainExceptionHandler {
 
         log.info("Exception handled: {}", apiError);
 
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleFeignExceptionNotFound(final FeignException.NotFound e) {
+        ApiError apiError = new ApiError(e.getClass().getSimpleName(), e.getMessage());
+        log.info("Exception handled: {}", apiError);
         return apiError;
     }
 

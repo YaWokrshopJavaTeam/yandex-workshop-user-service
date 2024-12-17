@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.userservice.dto.AuthRegistrationDto;
-import ru.practicum.workshop.userservice.dto.AutoUpdateUserDto;
+import ru.practicum.workshop.userservice.dto.UpdateUserFromRegistrationDto;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.ResponseWithUserId;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
@@ -44,6 +44,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ResponseWithUserId autoCreateUser(NewUserDto newUserDto) {
+
+        User availableUser = userRepository.getUserByEmail(newUserDto.getEmail());
+
+        if (availableUser != null && availableUser.getId() > 0) {
+            return new ResponseWithUserId(availableUser.getId());
+        }
+
         User newUser = userRepository.save(userMapper.toUser(newUserDto, RegistrationType.AUTO));
 
         log.info("Auto user added: {}", newUser);
@@ -70,14 +77,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto autoUpdateUserData(AutoUpdateUserDto autoUpdateUserDto, Long userId) {
+    public void autoUpdateUserData(UpdateUserFromRegistrationDto updateUserFromRegistrationDto, Long userId) {
         User userToUpdate = userRepository.getReferenceById(userId);
 
-        User updatedUser = userRepository.save(userMapper.autoUpdateUser(userToUpdate, autoUpdateUserDto));
+        if (userToUpdate.getRegistrationType().equals(RegistrationType.MANUAL)) {
+            throw new AuthenticationException("User with id=" + userId + " have MANUAL registration, and can't be" +
+                    " updated from registration-service.");
+        }
+
+        User updatedUser = userRepository.save(userMapper.autoUpdateUser(userToUpdate, updateUserFromRegistrationDto));
 
         log.info("Auto user updated: {}", updatedUser);
 
-        return userMapper.toUserDtoPrivate(updatedUser);
     }
 
     @Override
@@ -121,10 +132,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void autoDeleteUser(Long userId) {
-
-        log.info("Auto user deleted: id={}", userId);
-
-        userRepository.deleteById(userId);
+        User userForAutoDelete = userRepository.getReferenceById(userId);
+        if (userForAutoDelete.getRegistrationType().equals(RegistrationType.AUTO)) {
+            log.info("Auto user deleted: id={}", userId);
+            userRepository.deleteById(userId);
+        }
     }
 
     @Override

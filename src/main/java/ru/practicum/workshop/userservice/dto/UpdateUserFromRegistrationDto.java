@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AutoUpdateUserDto {
+public class UpdateUserFromRegistrationDto {
 
     private String name;
-
-    private String password;
 
     private String email;
 

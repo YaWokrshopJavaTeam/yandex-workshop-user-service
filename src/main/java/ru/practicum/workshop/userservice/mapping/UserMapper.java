@@ -1,7 +1,7 @@
 package ru.practicum.workshop.userservice.mapping;
 
 import org.mapstruct.*;
-import ru.practicum.workshop.userservice.dto.AutoUpdateUserDto;
+import ru.practicum.workshop.userservice.dto.UpdateUserFromRegistrationDto;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
@@ -19,7 +19,7 @@ public interface UserMapper {
     User updateUser(@MappingTarget User user, UpdateUserDto updateUserDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    User autoUpdateUser(@MappingTarget User user, AutoUpdateUserDto autoUpdateUserDto);
+    User autoUpdateUser(@MappingTarget User user, UpdateUserFromRegistrationDto updateUserFromRegistrationDto);
 
     UserDto toUserDtoPrivate(User user);
 

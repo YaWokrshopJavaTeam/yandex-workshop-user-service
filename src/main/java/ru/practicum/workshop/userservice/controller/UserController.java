@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.workshop.userservice.dto.AuthRegistrationDto;
-import ru.practicum.workshop.userservice.dto.AutoUpdateUserDto;
+import ru.practicum.workshop.userservice.dto.UpdateUserFromRegistrationDto;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.ResponseWithUserId;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
@@ -51,10 +51,10 @@ public class UserController {
 
     @PatchMapping("/internal")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto autoUpdateUserData(@RequestBody AutoUpdateUserDto autoUpdateUserDto,
+    public void autoUpdateUserData(@RequestBody UpdateUserFromRegistrationDto updateUserFromRegistrationDto,
                                       @RequestHeader("X-User-Id") Long userId) {
-        log.info("Request: auto update user with id={}, autoUpdateUserDto={}", userId, autoUpdateUserDto);
-        return userService.autoUpdateUserData(autoUpdateUserDto, userId);
+        log.info("Request: auto update user with id={}, updateUserFromRegistrationDto={}", userId, updateUserFromRegistrationDto);
+        userService.autoUpdateUserData(updateUserFromRegistrationDto, userId);
     }
 
     @PutMapping("/internal/to-manual")

@@ -2,7 +2,7 @@ package ru.practicum.workshop.userservice.service;
 
 import org.springframework.data.domain.Pageable;
 import ru.practicum.workshop.userservice.dto.AuthRegistrationDto;
-import ru.practicum.workshop.userservice.dto.AutoUpdateUserDto;
+import ru.practicum.workshop.userservice.dto.UpdateUserFromRegistrationDto;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.ResponseWithUserId;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
@@ -18,7 +18,7 @@ public interface UserService {
 
     UserDto updateUserData(UpdateUserDto updateUserDto, Long requesterId, String password);
 
-    UserDto autoUpdateUserData(AutoUpdateUserDto autoUpdateUserDto, Long userId);
+    void autoUpdateUserData(UpdateUserFromRegistrationDto updateUserFromRegistrationDto, Long userId);
 
     void transferUserToManual(Long userId, AuthRegistrationDto authRegistrationDto);
 

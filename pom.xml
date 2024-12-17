@@ -27,6 +27,9 @@
 		<url/>
 	</scm>
 	<properties>
+		<project.groupId>ru.practicum.workshop</project.groupId>
+		<project.artifactId>user-service</project.artifactId>
+		<project.version>0.0.1-SNAPSHOT</project.version>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
@@ -194,5 +197,75 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>dto-dependency-jar</id>
+			<properties>
+				<groupId>ru.druzhininyy.lpy-team</groupId>
+				<artifactId>user-service</artifactId>
+				<version>1.0.0</version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>repackage</id>
+								<phase>package</phase>
+								<goals>
+									<goal>repackage</goal>
+								</goals>
+								<configuration>
+									<skip>true</skip>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-shade-plugin</artifactId>
+						<version>3.6.0</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>shade</goal>
+								</goals>
+								<configuration>
+									<filters>
+										<filter>
+											<includes>
+												<include>ru/practicum/workshop/userservice/dto/**</include>
+											</includes>
+										</filter>
+									</filters>
+									<createDependencyReducedPom>true</createDependencyReducedPom>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>0.6.0</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+							<autoPublish>true</autoPublish>
+							<waitUntil>published</waitUntil>
+						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
 
 </project>

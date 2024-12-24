@@ -2,7 +2,7 @@ package ru.practicum.workshop.userservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.practicum.workshop.userservice.enums.RegistrationType;
+import ru.practicum.workshop.userservice.model.enums.RegistrationType;
 
 @Entity
 @Table(name = "users")
@@ -31,7 +31,7 @@ public class User {
     private String aboutMe;
 
     @Column(name = "registration_type")
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
 
 }

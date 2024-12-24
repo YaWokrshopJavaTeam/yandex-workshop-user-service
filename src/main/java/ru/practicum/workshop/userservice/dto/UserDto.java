@@ -2,7 +2,7 @@ package ru.practicum.workshop.userservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import ru.practicum.workshop.userservice.enums.RegistrationType;
+import ru.practicum.workshop.userservice.model.enums.RegistrationType;
 
 @Data
 @Builder

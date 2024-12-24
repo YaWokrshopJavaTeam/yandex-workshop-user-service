@@ -6,13 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.workshop.userservice.controller.UserController;
-import ru.practicum.workshop.userservice.dto.AuthRegistrationDto;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
-import ru.practicum.workshop.userservice.dto.ResponseWithUserId;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
 import ru.practicum.workshop.userservice.dto.UpdateUserFromRegistrationDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
@@ -21,10 +18,10 @@ import ru.practicum.workshop.userservice.service.UserService;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -333,9 +330,9 @@ public class UserControllerIntegrationTest {
                 .password("yurypass")
                 .aboutMe("Good person.").build();
 
-        ResponseWithUserId responseWithUserId = new ResponseWithUserId(1L);
+        Long userId = 1L;
 
-        when(userService.autoCreateUser(any(NewUserDto.class))).thenReturn(responseWithUserId);
+        when(userService.autoCreateUser(any(NewUserDto.class))).thenReturn(userId);
 
         mockMvc.perform(post("/users/internal")
                         .content(objectMapper.writeValueAsString(inputNewUserDto))
@@ -343,8 +340,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userId").exists())
-                .andExpect(jsonPath("$.userId", is(responseWithUserId.getUserId()), Long.class));
+                .andExpect(jsonPath("$").value(equalTo(userId), Long.class));
     }
 
     // Method "autoUpdateUserData" tests.
@@ -355,20 +351,6 @@ public class UserControllerIntegrationTest {
         mockMvc.perform(patch("/users/internal")
                         .header("X-User-Id", 1L)
                         .content(objectMapper.writeValueAsString(updateUserFromRegistrationDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    // Method "transferUserToManual" tests.
-    @Test
-    public void transferUserToManual_whenInputValid_thenUpdate() throws Exception {
-        AuthRegistrationDto authRegistrationDto = new AuthRegistrationDto(1L, "dsffds");
-
-        mockMvc.perform(put("/users/internal/to-manual")
-                        .header("X-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(authRegistrationDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

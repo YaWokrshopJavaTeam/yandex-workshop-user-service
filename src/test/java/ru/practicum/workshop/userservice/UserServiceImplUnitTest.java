@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
-import ru.practicum.workshop.userservice.enums.RegistrationType;
+import ru.practicum.workshop.userservice.model.enums.RegistrationType;
 import ru.practicum.workshop.userservice.exception.AuthenticationException;
 import ru.practicum.workshop.userservice.mapping.UserMapper;
 import ru.practicum.workshop.userservice.model.User;
@@ -187,15 +187,15 @@ public class UserServiceImplUnitTest {
     public void autoDeleteUser_whenInputValid_thenDelete() {
         Long requesterId = 1L;
 
-        User repositoryOutputUser = User.builder()
+        Optional<User> repositoryOutputUser = Optional.of(User.builder()
                 .id(1L)
                 .name("Yury")
                 .email("yury@yandex.ru")
                 .password("yurypass")
                 .aboutMe("Good person.")
-                .registrationType(RegistrationType.AUTO).build();
+                .registrationType(RegistrationType.AUTO).build());
 
-        when(userRepository.getReferenceById(requesterId)).thenReturn(repositoryOutputUser);
+        when(userRepository.findById(requesterId)).thenReturn(repositoryOutputUser);
 
         userService.autoDeleteUser(requesterId);
 

@@ -3,6 +3,8 @@ package ru.practicum.workshop.userservice.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +31,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(NewUserDto newUserDto) {
-        Optional<User> availableUser = userRepository.getUserByEmail(newUserDto.getEmail());
-        if (availableUser.isPresent() && availableUser.get().getRegistrationType().equals(RegistrationType.AUTO)) {
+        Optional<User> availableUser = userRepository.getUserByEmailAndRegistrationType(newUserDto.getEmail(), RegistrationType.AUTO);
+        if (availableUser.isPresent()) {
             User userForTransferToManual = availableUser.get();
             userForTransferToManual.setRegistrationType(RegistrationType.MANUAL);
-            User userTransferredToManual = userRepository.save(userMapper
-                    .changeFieldsOfAutoUserToManual(userForTransferToManual, newUserDto));
-            return userMapper.toUserDtoPrivate(userTransferredToManual);
+            return userMapper.toUserDtoPrivate(userRepository.save(userMapper
+                    .changeFieldsOfAutoUserToManual(userForTransferToManual, newUserDto)));
         }
 
         User newUser = userRepository.save(userMapper.toUser(newUserDto, RegistrationType.MANUAL));
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long autoCreateUser(NewUserDto newUserDto) {
+    public Long createAutoUserOrGetUserId(NewUserDto newUserDto) {
         Optional<User> availableUser = userRepository.getUserByEmail(newUserDto.getEmail());
         if (availableUser.isPresent()) {
             return availableUser.get().getId();
@@ -79,8 +80,12 @@ public class UserServiceImpl implements UserService {
     public void autoUpdateUserData(UpdateUserFromRegistrationDto updateUserFromRegistrationDto, Long userId) {
         Optional<User> userToUpdate = userRepository.findById(userId);
         if (userToUpdate.isPresent() && userToUpdate.get().getRegistrationType().equals(RegistrationType.AUTO)) {
-            User updatedUser = userRepository.save(userMapper.autoUpdateUser(userToUpdate.get(), updateUserFromRegistrationDto));
-            log.info("Auto user updated: {}", updatedUser);
+            try {
+                User autoUser = userRepository.save(userMapper.autoUpdateUser(userToUpdate.get(), updateUserFromRegistrationDto));
+                log.info("User updated: {}", autoUser);
+            } catch (ConstraintViolationException | DataIntegrityViolationException e) {
+                log.info(e.getMessage());
+            }
         }
     }
 

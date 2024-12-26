@@ -32,10 +32,9 @@ public class UserController {
     }
 
     @PostMapping("/internal")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Long autoCreateUser(@RequestBody NewUserDto newUserDto) {
+    public Long createAutoUserOrGetUserId(@RequestBody NewUserDto newUserDto) {
         log.info("Request: auto create user, newUserDto={}", newUserDto);
-        return userService.autoCreateUser(newUserDto);
+        return userService.createAutoUserOrGetUserId(newUserDto);
     }
 
     @PatchMapping

@@ -332,21 +332,21 @@ public class UserControllerIntegrationTest {
 
         Long userId = 1L;
 
-        when(userService.autoCreateUser(any(NewUserDto.class))).thenReturn(userId);
+        when(userService.createAutoUserOrGetUserId(any(NewUserDto.class))).thenReturn(userId);
 
         mockMvc.perform(post("/users/internal")
                         .content(objectMapper.writeValueAsString(inputNewUserDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(equalTo(userId), Long.class));
     }
 
     // Method "autoUpdateUserData" tests.
     @Test
     public void updateInternalUserData_whenInputValid_thenUpdate() throws Exception {
-        UpdateUserFromRegistrationDto updateUserFromRegistrationDto = new UpdateUserFromRegistrationDto("Yuri", "yury@yandex.ru");
+        UpdateUserFromRegistrationDto updateUserFromRegistrationDto = new UpdateUserFromRegistrationDto("yury@yandex.ru");
 
         mockMvc.perform(patch("/users/internal")
                         .header("X-User-Id", 1L)

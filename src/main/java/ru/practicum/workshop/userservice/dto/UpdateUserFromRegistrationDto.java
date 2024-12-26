@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateUserFromRegistrationDto {
 
-    private String name;
-
     private String email;
 
 }

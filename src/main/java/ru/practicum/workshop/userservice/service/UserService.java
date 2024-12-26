@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDto createUser(NewUserDto newUserDto);
 
-    Long autoCreateUser(NewUserDto newUserDto);
+    Long createAutoUserOrGetUserId(NewUserDto newUserDto);
 
     UserDto updateUserData(UpdateUserDto updateUserDto, Long requesterId, String password);
 

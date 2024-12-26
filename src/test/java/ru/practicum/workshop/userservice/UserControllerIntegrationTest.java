@@ -11,12 +11,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.workshop.userservice.controller.UserController;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
+import ru.practicum.workshop.userservice.dto.UpdateUserFromRegistrationDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
 import ru.practicum.workshop.userservice.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -317,5 +319,53 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].password").doesNotExist())
                 .andExpect(jsonPath("$[0].aboutMe").exists())
                 .andExpect(jsonPath("$[0].aboutMe", is(outputUserDto.getAboutMe())));
+    }
+
+    // Method "autoCreateUser" tests.
+    @Test
+    public void createUserInternal_whenInputValid_thenSave() throws Exception {
+        NewUserDto inputNewUserDto = NewUserDto.builder()
+                .name("Yury")
+                .email("yury@yandex.ru")
+                .password("yurypass")
+                .aboutMe("Good person.").build();
+
+        Long userId = 1L;
+
+        when(userService.createAutoUserOrGetUserId(any(NewUserDto.class))).thenReturn(userId);
+
+        mockMvc.perform(post("/users/internal")
+                        .content(objectMapper.writeValueAsString(inputNewUserDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(equalTo(userId), Long.class));
+    }
+
+    // Method "autoUpdateUserData" tests.
+    @Test
+    public void updateInternalUserData_whenInputValid_thenUpdate() throws Exception {
+        UpdateUserFromRegistrationDto updateUserFromRegistrationDto = new UpdateUserFromRegistrationDto("yury@yandex.ru");
+
+        mockMvc.perform(patch("/users/internal")
+                        .header("X-User-Id", 1L)
+                        .content(objectMapper.writeValueAsString(updateUserFromRegistrationDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    // Method "autoDeleteUser" tests.
+    @Test
+    public void autoDeleteUser_whenInputValid_thenUpdate() throws Exception {
+
+        mockMvc.perform(delete("/users/internal")
+                        .header("X-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

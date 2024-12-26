@@ -3,12 +3,16 @@ package ru.practicum.workshop.userservice.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.workshop.userservice.dto.UpdateUserFromRegistrationDto;
 import ru.practicum.workshop.userservice.dto.NewUserDto;
 import ru.practicum.workshop.userservice.dto.UpdateUserDto;
 import ru.practicum.workshop.userservice.dto.UserDto;
+import ru.practicum.workshop.userservice.model.enums.RegistrationType;
 import ru.practicum.workshop.userservice.exception.AuthenticationException;
 import ru.practicum.workshop.userservice.mapping.UserMapper;
 import ru.practicum.workshop.userservice.model.User;
@@ -21,19 +25,37 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
 
     @Override
     @Transactional
     public UserDto createUser(NewUserDto newUserDto) {
-        User newUser = userRepository.save(userMapper.toUser(newUserDto));
+        Optional<User> availableUser = userRepository.getUserByEmailAndRegistrationType(newUserDto.getEmail(), RegistrationType.AUTO);
+        if (availableUser.isPresent()) {
+            User userForTransferToManual = availableUser.get();
+            userForTransferToManual.setRegistrationType(RegistrationType.MANUAL);
+            return userMapper.toUserDtoPrivate(userRepository.save(userMapper
+                    .changeFieldsOfAutoUserToManual(userForTransferToManual, newUserDto)));
+        }
+
+        User newUser = userRepository.save(userMapper.toUser(newUserDto, RegistrationType.MANUAL));
 
         log.info("User added: {}", newUser);
 
         return userMapper.toUserDtoPrivate(newUser);
+    }
+
+    @Override
+    @Transactional
+    public Long createAutoUserOrGetUserId(NewUserDto newUserDto) {
+        Optional<User> availableUser = userRepository.getUserByEmail(newUserDto.getEmail());
+        if (availableUser.isPresent()) {
+            return availableUser.get().getId();
+        }
+        User newUser = userRepository.save(userMapper.toUser(newUserDto, RegistrationType.AUTO));
+        log.info("Auto user added: {}", newUser);
+        return newUser.getId();
     }
 
     @Override
@@ -55,6 +77,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void autoUpdateUserData(UpdateUserFromRegistrationDto updateUserFromRegistrationDto, Long userId) {
+        Optional<User> userToUpdate = userRepository.findById(userId);
+        if (userToUpdate.isPresent() && userToUpdate.get().getRegistrationType().equals(RegistrationType.AUTO)) {
+            try {
+                User autoUser = userRepository.save(userMapper.autoUpdateUser(userToUpdate.get(), updateUserFromRegistrationDto));
+                log.info("User updated: {}", autoUser);
+            } catch (ConstraintViolationException | DataIntegrityViolationException e) {
+                log.info(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    @Transactional
     public void deleteUser(Long requesterId, String password) {
         User userToDelete = userRepository.findById(requesterId).orElseThrow(
                 () -> new AuthenticationException("You don't have access to delete user with id="
@@ -66,6 +102,16 @@ public class UserServiceImpl implements UserService {
         log.info("User deleted: id={}", userToDelete.getId());
 
         userRepository.deleteById(requesterId);
+    }
+
+    @Override
+    @Transactional
+    public void autoDeleteUser(Long userId) {
+        Optional<User> userForAutoDelete = userRepository.findById(userId);
+        if (userForAutoDelete.isPresent() && userForAutoDelete.get().getRegistrationType().equals(RegistrationType.AUTO)) {
+            log.info("Auto user deleted: id={}", userId);
+            userRepository.deleteById(userId);
+        }
     }
 
     @Override
